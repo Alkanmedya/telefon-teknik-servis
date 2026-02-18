@@ -5,7 +5,7 @@ import {
     LayoutDashboard, Wrench, PlusCircle, Package, Smartphone, DollarSign,
     CalendarDays, Building2, TabletSmartphone, Heart, Settings, Globe,
     Eye, EyeOff, ChevronLeft, ChevronRight, Truck, RotateCcw, FileText,
-    Users, Search, Menu, X
+    Users, Search, Menu, X, ShoppingBag
 } from 'lucide-react';
 import { useState } from 'react';
 import type { PageType } from '@/app/page';
@@ -20,6 +20,7 @@ const menuItems: { id: PageType; label: string; icon: any; group: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, group: 'Ana Menü' },
     { id: 'new-repair', label: 'Yeni Kayıt', icon: PlusCircle, group: 'Ana Menü' },
     { id: 'repairs', label: 'Tamirler', icon: Wrench, group: 'Ana Menü' },
+    { id: 'shop', label: 'Mağaza / Satış', icon: ShoppingBag, group: 'Ana Menü' },
     { id: 'customers', label: 'Müşteriler', icon: Users, group: 'Ana Menü' },
     { id: 'stock', label: 'Stok & Parça', icon: Package, group: 'İş Yönetimi' },
     { id: 'suppliers', label: 'Tedarikçiler', icon: Truck, group: 'İş Yönetimi' },

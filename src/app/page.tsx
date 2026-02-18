@@ -18,12 +18,14 @@ import SupplierView from '@/components/SupplierView';
 import RMAView from '@/components/RMAView';
 import QuoteManager from '@/components/QuoteManager';
 import CustomerDetail from '@/components/CustomerDetail';
+import ShopView from '@/components/ShopView';
 import { useAppState } from '@/lib/store';
 import LoginScreen from '@/components/LoginScreen';
 import GlobalSearch from '@/components/GlobalSearch';
 import ThemeToggle from '@/components/ThemeToggle';
+import { Store } from 'lucide-react';
 
-export type PageType = 'dashboard' | 'repairs' | 'new-repair' | 'stock' | 'second-hand' | 'expenses' | 'calendar' | 'corporate' | 'loaners' | 'wishlist' | 'settings' | 'customer-portal' | 'suppliers' | 'rma' | 'quotes' | 'customers';
+export type PageType = 'dashboard' | 'repairs' | 'new-repair' | 'stock' | 'second-hand' | 'expenses' | 'calendar' | 'corporate' | 'loaners' | 'wishlist' | 'settings' | 'customer-portal' | 'suppliers' | 'rma' | 'quotes' | 'customers' | 'shop';
 
 export default function Home() {
   const { state } = useAppState();
@@ -63,6 +65,7 @@ export default function Home() {
       case 'rma': return <RMAView />;
       case 'quotes': return <QuoteManager />;
       case 'customers': return <CustomerDetail onNavigate={setCurrentPage} />;
+      case 'shop': return <ShopView />;
       default: return <Dashboard onNavigate={setCurrentPage} />;
     }
   };

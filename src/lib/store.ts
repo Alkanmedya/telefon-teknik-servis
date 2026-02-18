@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useCallback, useSyncExternalStore, useEffect } from 'react';
-import type { AppState, RepairRecord, Customer, StockItem, Supplier, RMARecord, WishlistItem, SecondHandDevice, Expense, ExchangeRate, Company, Quote, LoanerDevice, Appointment, QuickMessage, StickyNote, DeletedItem, StaffMember, AccountTransaction, Income } from './types';
+import { AppState, RepairRecord, Customer, StockItem, Supplier, RMARecord, WishlistItem, SecondHandDevice, Expense, Income, ExchangeRate, Quote, LoanerDevice, Appointment, QuickMessage, StickyNote, DeletedItem, Company, AccountTransaction, Product, Sale, StaffMember } from './types';
 
 const STORAGE_KEY = 'telefon-teknik-servis-data';
 
@@ -39,6 +39,8 @@ const defaultState: AppState = {
     accountTransactions: [],
     privacyMode: false,
     currentUserId: null,
+    products: [],
+    sales: [],
 };
 // ...
 
@@ -293,6 +295,39 @@ export function useAppState() {
     const addStickyNote = useCallback((n: StickyNote) => updateState(s => ({ ...s, stickyNotes: [n, ...s.stickyNotes] })), [updateState]);
     const updateStickyNote = useCallback((id: string, updates: Partial<StickyNote>) => updateState(s => ({ ...s, stickyNotes: s.stickyNotes.map(n => n.id === id ? { ...n, ...updates } : n) })), [updateState]);
     const deleteStickyNote = useCallback((id: string) => updateState(s => ({ ...s, stickyNotes: s.stickyNotes.filter(n => n.id !== id) })), [updateState]);
+
+    // Shop Actions
+    const addProduct = useCallback((product: Product) => updateState(s => ({ ...s, products: [...s.products, product] })), [updateState]);
+    const updateProduct = useCallback((id: string, updates: Partial<Product>) => updateState(s => ({ ...s, products: s.products.map(p => p.id === id ? { ...p, ...updates } : p) })), [updateState]);
+    const deleteProduct = useCallback((id: string) => updateState(s => ({ ...s, products: s.products.filter(p => p.id !== id) })), [updateState]);
+    const addSale = useCallback((sale: Sale) => {
+        updateState(prev => {
+            // Reduce stock
+            const newProducts = prev.products.map(p => {
+                const soldItem = sale.items.find(i => i.productId === p.id);
+                if (soldItem) return { ...p, stock: p.stock - soldItem.quantity };
+                return p;
+            });
+
+            // Add income automatically
+            const newIncome = {
+                id: crypto.randomUUID(),
+                amount: sale.total,
+                description: `Mağaza Satışı - ${new Date(sale.date).toLocaleTimeString('tr-TR')}`,
+                category: 'Aksesuar Satışı',
+                date: sale.date,
+                paymentMethod: sale.paymentMethod
+            };
+
+            return {
+                ...prev,
+                products: newProducts,
+                sales: [sale, ...prev.sales],
+                incomes: [...prev.incomes, newIncome as any] // Cast to any if Income type mismatch, but should be fine
+            };
+        });
+    }, [updateState]);
+
     const updateExchangeRate = useCallback((currency: 'USD' | 'EUR', rate: number, bank: string, source: 'manual' | 'api') => {
         updateState(s => ({
             ...s,
@@ -337,6 +372,7 @@ export function useAppState() {
         addLoanerDevice, updateLoanerDevice, deleteLoanerDevice,
         addAppointment, updateAppointment, deleteAppointment,
         addStickyNote, updateStickyNote, deleteStickyNote,
+        addProduct, updateProduct, deleteProduct, addSale,
         updateExchangeRate, updateQuickMessage,
         addStaff,
         login, logout,

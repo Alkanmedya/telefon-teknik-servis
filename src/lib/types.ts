@@ -37,6 +37,33 @@ export interface RepairPhoto {
     dataUrl: string;
     type: 'before' | 'after';
     takenAt: string;
+    // Shop
+    products: Product[];
+    sales: Sale[];
+}
+
+export interface Product {
+    id: string;
+    name: string;
+    category: 'case' | 'charger' | 'cable' | 'screen_protector' | 'audio' | 'other';
+    price: number;
+    stock: number;
+}
+
+export interface SaleItem {
+    productId: string;
+    name: string;
+    price: number;
+    quantity: number;
+}
+
+export interface Sale {
+    id: string;
+    items: SaleItem[];
+    total: number;
+    paymentMethod: 'cash' | 'card';
+    date: string;
+    staffId?: string;
 }
 
 export interface RepairRecord {
@@ -282,4 +309,6 @@ export interface AppState {
     accountTransactions: AccountTransaction[];
     privacyMode: boolean;
     currentUserId: string | null;
+    products: Product[];
+    sales: Sale[];
 }
