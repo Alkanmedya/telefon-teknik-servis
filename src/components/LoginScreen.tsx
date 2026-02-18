@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppState } from '@/lib/store';
 import { Delete, Smartphone, LogIn, Lock } from 'lucide-react';
 
@@ -29,6 +29,34 @@ export default function LoginScreen() {
             setPin('');
         }
     };
+
+    // Keyboard support
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key >= '0' && e.key <= '9') {
+                if (pin.length < 4) {
+                    setPin(prev => prev + e.key);
+                    setError(false);
+                }
+            } else if (e.key === 'Backspace') {
+                setPin(prev => prev.slice(0, -1));
+                setError(false);
+            } else if (e.key === 'Enter') {
+                if (pin.length >= 4) {
+                    if (login(pin)) {
+                        // Success
+                    } else {
+                        setError(true);
+                        setPin('');
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [pin, login]);
+
 
     const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'delete'];
 
