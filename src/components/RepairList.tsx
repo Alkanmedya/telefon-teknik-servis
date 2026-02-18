@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useAppState } from '@/lib/store';
 import { statusLabels, statusColors, formatCurrency, formatDate, openWhatsApp } from '@/lib/utils';
-import { Search, MessageCircle, Edit2, Trash2, Printer, Package, Shield, ShieldAlert, ShieldCheck, Plus, X, ChevronDown, ChevronUp, Eye } from 'lucide-react';
+import { Search, Filter, Plus, Edit2, CheckCircle, Clock, AlertCircle, XCircle, Trash2, Eye, Printer, Shield, ShieldCheck, ShieldAlert, MessageCircle, Package, X, ChevronDown, ChevronUp } from 'lucide-react';
 import type { PageType } from '@/app/page';
 import type { RepairStatus } from '@/lib/types';
 
@@ -415,6 +415,64 @@ export default function RepairList({ onNavigate }: RepairListProps) {
                                 })}
                             </tbody>
                         </table>
+                    )}
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4">
+                    {filtered.length === 0 ? (
+                        <p className="text-sm text-center py-12" style={{ color: 'var(--text-muted)' }}>
+                            {state.repairs.length === 0 ? 'Henüz tamir kaydı yok.' : 'Arama kriterlerine uygun kayıt bulunamadı.'}
+                        </p>
+                    ) : (
+                        filtered.map((repair) => {
+                            const warranty = getWarrantyInfo(repair);
+                            return (
+                                <div key={repair.id} className="card p-4 space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h3 className="font-medium text-white">{repair.customer.fullName}</h3>
+                                            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{repair.device.brand} {repair.device.model}</p>
+                                        </div>
+                                        <span className={`status-badge ${statusColors[repair.status]}`}>
+                                            {statusLabels[repair.status]}
+                                        </span>
+                                    </div>
+
+                                    <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                                        {repair.issueDescription}
+                                    </div>
+
+                                    <div className="flex justify-between items-center text-sm" style={{ color: 'var(--text-muted)' }}>
+                                        <span>{formatDate(repair.createdAt)}</span>
+                                        <span className="font-bold" style={{ color: 'var(--accent)' }}>
+                                            {repair.finalCost > 0 ? formatCurrency(repair.finalCost) : formatCurrency(repair.estimatedCost)}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex gap-2 pt-2">
+                                        <button
+                                            onClick={() => handlePrint(repair.id)}
+                                            className="flex-1 btn-secondary text-sm py-2 flex items-center justify-center gap-2"
+                                        >
+                                            <Printer size={16} /> Yazdır
+                                        </button>
+                                        <button
+                                            onClick={() => handleStartEdit(repair.id)}
+                                            className="flex-1 btn-primary text-sm py-2 flex items-center justify-center gap-2"
+                                        >
+                                            <Edit2 size={16} /> Düzenle
+                                        </button>
+                                        <button
+                                            onClick={() => setExpandedId(expandedId === repair.id ? null : repair.id)}
+                                            className="flex-1 btn-outline text-sm py-2 flex items-center justify-center gap-2"
+                                        >
+                                            <Eye size={16} /> Detay
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })
                     )}
                 </div>
 
